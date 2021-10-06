@@ -13,7 +13,8 @@ const { BadRequestError } = require("../expressError");
  *
  * VShips an order coming from json body:
  *   { productId, name, addr, zip }
- *
+ * Validates incoming data according to shippingSchema. If invalid,
+ * throws a BadRequestError (400)
  * Returns { shipped: shipId }
  */
 
@@ -22,6 +23,7 @@ router.post("/", async function (req, res, next) {
 
   if (!result.valid) {
     let errs = result.errors.map(err => err.stack);
+    console.log(errs);
     throw new BadRequestError(errs);
   }
 

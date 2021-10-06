@@ -1,17 +1,45 @@
 "use strict";
 
-const {
-  shipProduct,
-} = require("./shipItApi");
+const AxiosMockAdapter = require('axios-mock-adapter');
+const axios = require('axios');
+const axiosMock = new AxiosMockAdapter(axios);
 
 
-test("shipProduct", async function () {
-  const shipId = await shipProduct({
-    productId: 1000,
-    name: "Test Tester",
-    addr: "100 Test St",
-    zip: "12345-6789",
+const { shipProduct, SHIPIT_SHIP_URL } = require("./shipItApi");
+
+describe("shipProduct", function () {
+  test("valid - AXIOS MOCK", async function () {
+    console.log('above axiosMock');
+    axiosMock.onPost(SHIPIT_SHIP_URL).reply(200, {
+      receipt:
+      {
+        itemId: 1000,
+        name: 'Test Tester',
+        addr: '100 Test St',
+        zip: 91564,
+        shipId: 7021
+      }
+    });
+
+    const shipId = await shipProduct({
+      productId: 1000,
+      name: "Test Tester",
+      addr: "100 Test St",
+      zip: "12345-6789",
+    });
+
+    expect(shipId).toEqual(7021);
   });
 
-  expect(shipId).toEqual(expect.any(Number));
+  // test("shipProduct - no axios mock", async function () {
+  //   const shipId = await shipProduct({
+  //     productId: 1000,
+  //     name: "Test Tester",
+  //     addr: "100 Test St",
+  //     zip: "12345-6789",
+  //   });
+
+  //   expect(shipId).toEqual(expect.any(Number));
+  // })
 });
+
